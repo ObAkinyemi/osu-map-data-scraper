@@ -1,0 +1,24 @@
+{
+  "name": "osu-map-data-scraper",
+  "version": "1.0.0",
+  "description": "I ran into the problem of figuring out how to import stuff in es6 using require instead of import.\r I am meant to use import x from 'y' or import 'a/b'.\r this: https://www.geeksforgeeks.org/javascript/javascript-program-to-read-text-file/\r to this: https://www.npmjs.com/package/dotenv#%EF%B8%8F-usage\r https://www.youtube.com/watch?v=QHb75wm2iLk",
+  "main": "script.js",
+  "type": "module",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ObAkinyemi/osu-map-data-scraper.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/ObAkinyemi/osu-map-data-scraper/issues"
+  },
+  "homepage": "https://github.com/ObAkinyemi/osu-map-data-scraper#readme",
+  "dependencies": {
+    "osu-api-v2-js": "^2.0.1"
+  }
+}
