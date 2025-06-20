@@ -20,5 +20,8 @@
   "homepage": "https://github.com/ObAkinyemi/osu-map-data-scraper#readme",
   "dependencies": {
     "osu-api-v2-js": "^2.0.1"
+  },
+  "devDependencies": {
+    "@types/node": "^24.0.3"
   }
 }
