@@ -98,8 +98,13 @@ async function testWrite(filename, input) {
         console.error("Error writing files", error);
     }
 }
-const example_set = await getBeatmapSetData(1685877);
-testWrite('test-data.txt', JSON.stringify(example_set.title));
+
+let example_set = await getBeatmapSetData(1685881);
+let filename = example_set.title + ".txt";
+testWrite("stream practice map datasets/"+filename, JSON.stringify(example_set));
 console.log(await logUserTopPlayBeatmap("Saiyenmam"));
+
+
+
 
 // fs.writeFile('test-data.txt', example_set);
