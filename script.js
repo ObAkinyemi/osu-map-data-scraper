@@ -15,6 +15,12 @@ const redirect_uri = process.env.REDIRECT_URI;
 
 // TypeScript
 
+// let example_set = await getBeatmapSetData(1685881);
+// let filename = example_set.title + ".txt";
+// testWrite("stream practice map datasets/"+filename, JSON.stringify(example_set));
+// console.log(await logUserTopPlayBeatmap("Saiyenmam"));
+logUserTopPlayBeatmap("Saiyenmam");
+
 // Because we need to act as an authenticated user, we need to go through the authorization procedure
 // This function largely takes care of it by itself
 async function getCode(authorization_url) {
@@ -72,8 +78,8 @@ async function logUserTopPlayBeatmap(username) {
 
     const x = `${score.beatmapset.artist} - ${score.beatmapset.title} [${score.beatmap.version}]`
     const y = `+${score.mods.map((m) => m.acronym).toString()} (${beatmapDifficulty.star_rating.toFixed(2)}*)`
-    // console.log(`${username}'s top play is on: ${x} ${y}`)
-    return x;
+    console.log(`${username}'s top play is on: ${x} ${y}`)
+    // return await x;
     // Doomsday fanboy's top play is on: Erio o Kamattechan - os-Uchuujin(Asterisk Makina Remix) [Mattress Actress] +DT,CL (8.87*)
 }
 
@@ -99,12 +105,18 @@ async function testWrite(filename, input) {
     }
 }
 
-let example_set = await getBeatmapSetData(1685881);
-let filename = example_set.title + ".txt";
-testWrite("stream practice map datasets/"+filename, JSON.stringify(example_set));
-console.log(await logUserTopPlayBeatmap("Saiyenmam"));
+async function getMostPlayedBMs(username) {
+	try {
+		const api = await osu.API.createAsync(`${id}`, `${secret}`).then(token => { return token } );
+		const mostPlayed = await api.getUserMostPlayed(username);
 
+		console.log("This is the set\n", mostPlayed);
+	} catch (error) {
+		console.error("Could not fetch most played", error);
+	}
+}
 
+getMostPlayedBMs("Saiyenmam");
 
 
 // fs.writeFile('test-data.txt', example_set);
