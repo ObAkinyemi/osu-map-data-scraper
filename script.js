@@ -15,8 +15,10 @@ const redirect_uri = process.env.REDIRECT_URI;
 
 // TypeScript
 let bm_id = await getMostPlayedBMs("Saiyenmam");
+// console.log(bm_id);
 getBeatmapSetData(bm_id);
 // let example_set = await getBeatmapSetData(1685881);
+// console.log(example_set);
 // let filename = example_set.title + ".txt";
 // testWrite("stream practice map datasets/"+filename, JSON.stringify(example_set));
 // fs.writeFile('test-data.txt', example_set);
@@ -99,7 +101,7 @@ async function logUserTopPlayBeatmap(username) {
 async function getBeatmapSetData(beatmapsetID){
     try {
         const api = await osu.API.createAsync(`${id}`, `${secret}`).then(token => { return token } );
-        const set = await api.getBeatmapset(beatmapsetID,);
+        const set = await api.getBeatmapset(beatmapsetID);
         // console.log(set);
         // console.log(typeof(set));
 		console.log(set);
@@ -126,12 +128,13 @@ async function getMostPlayedBMs(username) {
 		const userID = userInfo.id;
 		const mostPlayed_id = await api.getUserMostPlayed(userID, {limit: 1});
 
-		console.log("This is the set\n", mostPlayed_id[0].beatmap.beatmapset_id);
-		return mostPlayed_id;
+		// console.log("This is the set\n", mostPlayed_id[0].beatmapset.id);
+		return mostPlayed_id[0].beatmapset.id;
 	} catch (error) {
 		console.error("Could not fetch most played", error);
 	}
 }
+
 
 // getMostPlayedBMs("Saiyenmam");
 
