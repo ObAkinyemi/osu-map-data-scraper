@@ -14,9 +14,9 @@ const token = process.env.TOKEN;
 const redirect_uri = process.env.REDIRECT_URI;
 
 // TypeScript
-let bm_ids = await arrayBMIDs("Saiyenmam", 1705);
+let bm_ids = await arrayBMIDs("Saiyenmam", 1705).then(data => {return data});
 
-// console.log(bm_ids);
+console.log(bm_ids);
 // getBeatmapSetData(bm_ids);
 // let example_set = await getBeatmapSetData(1685881);
 // console.log(example_set);
@@ -157,9 +157,16 @@ async function arrayBMIDs(username, lim) {
 			const userID = await userInfo.id;
 			const mostPlayed = await api.getUserMostPlayed(userID, {limit: lim});
 
-			console.log("This is the set\n", mostPlayed_id[0].beatmapset.id);
-			for (let i = 0; i < lim; i++){
-				list_of_ids.push(mostPlayed[i].beatmap.beatmapset_id);
+			// console.log("This is the set\n", mostPlayed[0].beatmapset.id);
+			for (let i = 0; i < mostPlayed.length; i++){
+				
+				const play = mostPlayed[i];
+  					if (play && play.beatmap && play.beatmap.beatmapset_id) {
+						list_of_ids.push(mostPlayed[i].beatmap.beatmapset_id);
+
+					} else {
+						console.warn(`Skipped item at index ${i}: incomplete data`);
+					}
 				// console.log(mostPlayed_id[i].beatmapset.id);
 
 				// return mostPlayed_id[i].beatmapset.id;
@@ -170,7 +177,7 @@ async function arrayBMIDs(username, lim) {
 		console.error("Could not fetch most played", error);
 	}
 }
-arrayBMIDs("Saiyenmam", 2).then(data => console.log(data));
+// arrayBMIDs("Saiyenmam", 10).then(data => {return data});
 
 // getMostPlayedBMs("Saiyenmam", 3);
 
