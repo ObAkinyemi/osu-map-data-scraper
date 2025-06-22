@@ -14,9 +14,10 @@ const token = process.env.TOKEN;
 const redirect_uri = process.env.REDIRECT_URI;
 
 // TypeScript
-// let bm_id = await arrayBMIDs("Saiyenmam", 1705);
-// console.log(bm_id);
-// getBeatmapSetData(bm_id);
+let bm_ids = await arrayBMIDs("Saiyenmam", 1705);
+
+// console.log(bm_ids);
+// getBeatmapSetData(bm_ids);
 // let example_set = await getBeatmapSetData(1685881);
 // console.log(example_set);
 // let filename = example_set.title + ".txt";
@@ -123,7 +124,7 @@ async function testWrite(filename, input) {
     }
 }
 
-This returns an array of the 
+// This returns an array of my most played beat sourceMapsEnabled, but not data about the maps themselves.
 async function getMostPlayedBMs(username, lim) {
 	try {
 		let my_play_stat_data = [];
@@ -146,27 +147,30 @@ async function getMostPlayedBMs(username, lim) {
 	}
 }
 
+
+// This will give me the ids of my most played beatmaps.
 async function arrayBMIDs(username, lim) {
 		try {
-			let list_of_ids = [];
+			let list_of_ids = await [];
 			const api = await osu.API.createAsync(`${id}`, `${secret}`).then(token => { return token } );
 			const userInfo = await api.getUser(username, osu.Ruleset.osu);
-			const userID = userInfo.id;
-			const mostPlayed_id = await api.getUserMostPlayed(userID, {limit: lim});
+			const userID = await userInfo.id;
+			const mostPlayed = await api.getUserMostPlayed(userID, {limit: lim});
 
 			// console.log("This is the set\n", mostPlayed_id[0].beatmapset.id);
 			for (let i = 0; i < lim; i++){
-				list_of_ids.push(mostPlayed_id[i].beatmapset.id);
+				list_of_ids.push(mostPlayed[i].beatmap.beatmapset_id);
 				// console.log(mostPlayed_id[i].beatmapset.id);
 
 				// return mostPlayed_id[i].beatmapset.id;
 			}
-			console.log(list_of_ids);
+			// console.log(list_of_ids);
+			return list_of_ids;
 	} catch (error) {
 		console.error("Could not fetch most played", error);
 	}
 }
-// arrayBMIDs("Saiyenmam", 1705);
+console.log(arrayBMIDs("Saiyenmam", 2));
 
-getMostPlayedBMs("Saiyenmam", 3);
+// getMostPlayedBMs("Saiyenmam", 3);
 
