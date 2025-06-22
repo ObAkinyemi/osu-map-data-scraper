@@ -7,63 +7,76 @@ import { json } from 'stream/consumers';
 dotenv.config();
 
 // console.log(process.env);
-console.log("your mom");
+// console.log("your mom");
 const id = process.env.CLIENT_ID;
 const secret = process.env.CLIENT_SECRET;
 const token = process.env.TOKEN;
 const redirect_uri = process.env.REDIRECT_URI;
 
 // TypeScript
-
+let bm_id = await getMostPlayedBMs("Saiyenmam");
+getBeatmapSetData(bm_id);
 // let example_set = await getBeatmapSetData(1685881);
 // let filename = example_set.title + ".txt";
 // testWrite("stream practice map datasets/"+filename, JSON.stringify(example_set));
+// fs.writeFile('test-data.txt', example_set);
 // console.log(await logUserTopPlayBeatmap("Saiyenmam"));
-logUserTopPlayBeatmap("Saiyenmam");
+
+// logUserTopPlayBeatmap("Saiyenmam");
+
+async function tokenRefresh() {
+	try {
+		const api = await osu.API.createAsync(`${id}`, `${secret}`);
+		const new_token = api.refreshToken();
+		
+	} catch (error) {
+		console.error("can't refresh token", error);
+	}
+
+}
+// getSelf();
 
 // Because we need to act as an authenticated user, we need to go through the authorization procedure
 // This function largely takes care of it by itself
 async function getCode(authorization_url) {
 	// Open a temporary server to receive the code when the browser is sent to the redirect_uri after confirming authorization
-	const httpserver = http.createServer()
-	const host = redirect_uri.substring(redirect_uri.indexOf("/") + 2, redirect_uri.lastIndexOf(":"))
-	const port = Number(redirect_uri.substring(redirect_uri.lastIndexOf(":") + 1).split("/")[0])
-	httpserver.listen({host, port})
-
+	const httpserver = http.createServer();
+	const host = redirect_uri.substring(redirect_uri.indexOf("/") + 2, redirect_uri.lastIndexOf(":"));
+	const port = Number(redirect_uri.substring(redirect_uri.lastIndexOf(":") + 1).split("/")[0]);
+	httpserver.listen({host, port});
+ 
 	// Open the browser to the page on osu!web where you click a button to say you authorize your application
-	console.log("Waiting for code...")
-	const command = (process.platform == "darwin" ? "open" : process.platform == "win32" ? "start" : "xdg-open")
-	exec(`${command} "${authorization_url}"`)
+	console.log("Waiting for code...");
+	const command = (process.platform == "darwin" ? "open" : process.platform == "win32" ? "start" : "xdg-open");
+	exec(`${command} "" "${authorization_url}"`);
 
 	// Check the URL for a `code` GET parameter, get it if it's there
 	const code = await new Promise((resolve) => {
 		httpserver.on("request", (request, response) => {
 			if (request.url) {
-				console.log("Received code!")
-				response.end("Worked! You may now close this tab.", "utf-8")
-				httpserver.close() // Close the temporary server as it is no longer needed
-				resolve(request.url.substring(request.url.indexOf("code=") + 5))
+				console.log("Received code!");
+				response.end("Worked! You may now close this tab.", "utf-8");
+				httpserver.close(); // Close the temporary server as it is no longer needed
+				resolve(request.url.substring(request.url.indexOf("code=") + 5));
 			}
 		})
 	})
-	return code
+	return code;
 }
 
 async function getSelf() {
 	// Get the code needed for the api object
-	const url = osu.generateAuthorizationURL(id, redirect_uri, ["public", "identify"])
-	const code = await getCode(url)
-	const api = await osu.API.createAsync(id, secret, {code, redirect_uri}, {verbose: "all"})
+	const url = osu.generateAuthorizationURL(id, redirect_uri, ["public", "identify"]);
+	const code = await getCode(url);
+	const api = await osu.API.createAsync(id, secret, {code, redirect_uri}, {verbose: "all"});
 	
 	// Use the `me` endpoint, which gives information about the authorized user!
-	const me = await api.getResourceOwner()
-	console.log("My id is", me.id, "but I'm better known as", me.username)
+	const me = await api.getResourceOwner();
+	console.log("My id is", me.id, "but I'm better known as", me.username);
 	
 	// If you're not gonna use the token anymore, might as well revoke it for the sake of security
-	await api.revokeToken().then(() => console.log("Revoked the token, it can no longer be used!"))
+	await api.revokeToken().then(() => console.log("Revoked the token, it can no longer be used!"));
 }
-
-// getSelf();
 
 
 async function logUserTopPlayBeatmap(username) {
@@ -83,16 +96,17 @@ async function logUserTopPlayBeatmap(username) {
     // Doomsday fanboy's top play is on: Erio o Kamattechan - os-Uchuujin(Asterisk Makina Remix) [Mattress Actress] +DT,CL (8.87*)
 }
 
-async function getBeatmapSetData(beatmapset){
+async function getBeatmapSetData(beatmapsetID){
     try {
         const api = await osu.API.createAsync(`${id}`, `${secret}`).then(token => { return token } );
-        const set = await api.getBeatmapset(beatmapset)
+        const set = await api.getBeatmapset(beatmapsetID,);
         // console.log(set);
         // console.log(typeof(set));
-        return await set;
+		console.log(set);
+        return set;
 
     } catch (error) {
-        console.error("Error fetching data", error);
+        console.error("Error fetching beatmap set data", error);
     }
 }
 
@@ -108,15 +122,16 @@ async function testWrite(filename, input) {
 async function getMostPlayedBMs(username) {
 	try {
 		const api = await osu.API.createAsync(`${id}`, `${secret}`).then(token => { return token } );
-		const mostPlayed = await api.getUserMostPlayed(username);
+		const userInfo = await api.getUser(username, osu.Ruleset.osu);
+		const userID = userInfo.id;
+		const mostPlayed_id = await api.getUserMostPlayed(userID, {limit: 1});
 
-		console.log("This is the set\n", mostPlayed);
+		console.log("This is the set\n", mostPlayed_id[0].beatmap.beatmapset_id);
+		return mostPlayed_id;
 	} catch (error) {
 		console.error("Could not fetch most played", error);
 	}
 }
 
-getMostPlayedBMs("Saiyenmam");
+// getMostPlayedBMs("Saiyenmam");
 
-
-// fs.writeFile('test-data.txt', example_set);
