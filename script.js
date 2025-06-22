@@ -151,21 +151,21 @@ async function getMostPlayedBMs(username, lim) {
 // This will give me the ids of my most played beatmaps.
 async function arrayBMIDs(username, lim) {
 		try {
-			// let list_of_ids = [];
+			let list_of_ids = [];
 			const api = await osu.API.createAsync(`${id}`, `${secret}`);
 			const userInfo = await api.getUser(username, osu.Ruleset.osu);
 			const userID = await userInfo.id;
 			const mostPlayed = await api.getUserMostPlayed(userID, {limit: lim});
 
-			// console.log("This is the set\n", mostPlayed_id[0].beatmapset.id);
-			// for (let i = 0; i < lim; i++){
-			// 	list_of_ids.push(mostPlayed[i].beatmap.beatmapset_id);
-			// 	// console.log(mostPlayed_id[i].beatmapset.id);
+			console.log("This is the set\n", mostPlayed_id[0].beatmapset.id);
+			for (let i = 0; i < lim; i++){
+				list_of_ids.push(mostPlayed[i].beatmap.beatmapset_id);
+				// console.log(mostPlayed_id[i].beatmapset.id);
 
-			// 	// return mostPlayed_id[i].beatmapset.id;
-			// }
-			// // console.log(list_of_ids);
-			return mostPlayed;
+				// return mostPlayed_id[i].beatmapset.id;
+			}
+			// console.log(list_of_ids);
+			return list_of_ids;
 	} catch (error) {
 		console.error("Could not fetch most played", error);
 	}
