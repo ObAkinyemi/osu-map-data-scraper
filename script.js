@@ -10,37 +10,26 @@ dotenv.config();
 // console.log("your mom");
 const id = process.env.CLIENT_ID;
 const secret = process.env.CLIENT_SECRET;
-const token = process.env.TOKEN;
 const redirect_uri = process.env.REDIRECT_URI;
 
 // TypeScript
 let bm_ids = await arrayBMIDs("Saiyenmam", 1705).then(data => {return data});
 
-console.log(bm_ids);
 // getBeatmapSetData(bm_ids);
-// let example_set = await getBeatmapSetData(1685881);
+// let example_set = await getBeatmapSetData(1685881).then(data => {return data});
 // console.log(example_set);
 // let filename = example_set.title + ".txt";
 // testWrite("stream practice map datasets/"+filename, JSON.stringify(example_set));
-// fs.writeFile('test-data.txt', example_set);
-// console.log(await logUserTopPlayBeatmap("Saiyenmam"));
 
-// logUserTopPlayBeatmap("Saiyenmam");
 
-async function tokenRefresh() {
-	try {
-		const api = await osu.API.createAsync(`${id}`, `${secret}`);
-		const new_token = api.refreshToken();
-		
-	} catch (error) {
-		console.error("can't refresh token", error);
-	}
+// function not yet working. Needs manual token generation and
+// honestly its faster to just use the VPN + getSelf function, so no more tokenRefresh function.
 
-}
 // getSelf();
 
 // Because we need to act as an authenticated user, we need to go through the authorization procedure
 // This function largely takes care of it by itself
+// activates server for auth url and code for token gen
 async function getCode(authorization_url) {
 	// Open a temporary server to receive the code when the browser is sent to the redirect_uri after confirming authorization
 	const httpserver = http.createServer();
@@ -67,6 +56,7 @@ async function getCode(authorization_url) {
 	return code;
 }
 
+// gets token from getCode function.
 async function getSelf() {
 	// Get the code needed for the api object
 	const url = osu.generateAuthorizationURL(id, redirect_uri, ["public", "identify"]);
@@ -81,7 +71,7 @@ async function getSelf() {
 	await api.revokeToken().then(() => console.log("Revoked the token, it can no longer be used!"));
 }
 
-
+// example function that logs users top play
 async function logUserTopPlayBeatmap(username) {
     // It's more convenient to use `osu.API.createAsync()` instead of `new osu.API()` as it doesn't require you to directly provide an access_token!
     // In a proper application, you'd use this function as soon as the app starts so you can use that object everywhere
@@ -99,21 +89,23 @@ async function logUserTopPlayBeatmap(username) {
     // Doomsday fanboy's top play is on: Erio o Kamattechan - os-Uchuujin(Asterisk Makina Remix) [Mattress Actress] +DT,CL (8.87*)
 }
 
+
+// Gets json information for a beatmap set when given an id.
 async function getBeatmapSetData(beatmapsetID){
     try {
 
         const api = await osu.API.createAsync(`${id}`, `${secret}`).then(token => { return token } );
 		
         const set = await api.getBeatmapset(beatmapsetID);
-        // console.log(set);
-        // console.log(typeof(set));
-		console.log(set);
+		// set up so beatmapsetID can be a single input or an array.
+        
         return set;
 
     } catch (error) {
         console.error("Error fetching beatmap set data", error);
     }
 }
+
 
 async function testWrite(filename, input) {
     try {
@@ -124,7 +116,8 @@ async function testWrite(filename, input) {
     }
 }
 
-// This returns an array of my most played beat sourceMapsEnabled, but not data about the maps themselves.
+// This returns an array of my most played beatmap sets with surface level information based on a username the limit,
+// but not raw data about the maps themselves.
 async function getMostPlayedBMs(username, lim) {
 	try {
 		let my_play_stat_data = [];
@@ -147,8 +140,8 @@ async function getMostPlayedBMs(username, lim) {
 	}
 }
 
-// adding this to commit again
 // This will give me the ids of my most played beatmaps.
+// based on getMostPlayedBMs.
 async function arrayBMIDs(username, lim) {
 		try {
 			let list_of_ids = [];
@@ -177,7 +170,3 @@ async function arrayBMIDs(username, lim) {
 		console.error("Could not fetch most played", error);
 	}
 }
-// arrayBMIDs("Saiyenmam", 10).then(data => {return data});
-
-// getMostPlayedBMs("Saiyenmam", 3);
-
