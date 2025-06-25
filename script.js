@@ -6,8 +6,6 @@ import { exec } from "child_process"
 import { json } from 'stream/consumers';
 dotenv.config();
 
-// console.log(process.env);
-// console.log("your mom");
 const id = process.env.CLIENT_ID;
 const secret = process.env.CLIENT_SECRET;
 const redirect_uri = process.env.REDIRECT_URI;
