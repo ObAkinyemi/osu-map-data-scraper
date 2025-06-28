@@ -5,14 +5,17 @@ import * as http from "http"
 import { exec } from "child_process"
 import { json } from 'stream/consumers';
 dotenv.config();
-
 const id = process.env.CLIENT_ID;
 const secret = process.env.CLIENT_SECRET;
 const redirect_uri = process.env.REDIRECT_URI;
 
 // TypeScript
-let bm_ids = await arrayBMIDs("Saiyenmam", 1705).then(data => {return data});
-
+let bm_ids = await arrayBMIDs("Saiyenmam", 1700).then(data => {return data});
+getSelf();
+// console.log(bm_ids);
+// console.log(typeof(bm_ids));
+// let test = await getMostPlayedBMs("Saiyenmam", 50).then(data => {return data});
+// console.log(test);
 // getBeatmapSetData(bm_ids);
 // let example_set = await getBeatmapSetData(1685881).then(data => {return data});
 // console.log(example_set);
@@ -94,10 +97,10 @@ async function getBeatmapSetData(beatmapsetID){
 
         const api = await osu.API.createAsync(`${id}`, `${secret}`).then(token => { return token } );
 		
-        const set = await api.getBeatmapset(beatmapsetID);
+        const setData = await api.getBeatmapset(beatmapsetID);
 		// set up so beatmapsetID can be a single input or an array.
         
-        return set;
+        return setData;
 
     } catch (error) {
         console.error("Error fetching beatmap set data", error);
@@ -131,8 +134,7 @@ async function getMostPlayedBMs(username, lim) {
 
 		// 	// return mostPlayed_id[i].beatmapset.id;
 		// }
-		console.log(mostPlayed);
-		return my_play_stat_data;
+		return mostPlayed.beatmapset.id;
 	} catch (error) {
 		console.error("Could not fetch most played", error);
 	}
@@ -140,30 +142,25 @@ async function getMostPlayedBMs(username, lim) {
 
 // This will give me the ids of my most played beatmaps.
 // based on getMostPlayedBMs.
-async function arrayBMIDs(username, lim) {
-		try {
-			let list_of_ids = [];
-			const api = await osu.API.createAsync(`${id}`, `${secret}`);
-			const userInfo = await api.getUser(username, osu.Ruleset.osu);
-			const userID = await userInfo.id;
-			const mostPlayed = await api.getUserMostPlayed(userID, {limit: lim});
+async function arrayBMIDs(username, totalLimit) {
+	try {
+		const batchSize = 100;
+		let list_of_ids = [];
+		const api = await osu.API.createAsync(`${id}`, `${secret}`);
+		const userInfo = await api.getUser(username, osu.Ruleset.osu);
+		const userID = userInfo.id;
 
-			// console.log("This is the set\n", mostPlayed[0].beatmapset.id);
-			for (let i = 0; i < mostPlayed.length; i++){
-				
-				const play = mostPlayed[i];
-  					if (play && play.beatmap && play.beatmap.beatmapset_id) {
-						list_of_ids.push(mostPlayed[i].beatmap.beatmapset_id);
+		for (let offset = 0; offset < totalLimit; offset += batchSize) {
+			const batch = await api.getUserMostPlayed(userID, { limit: batchSize, offset });
 
-					} else {
-						console.warn(`Skipped item at index ${i}: incomplete data`);
-					}
-				// console.log(mostPlayed_id[i].beatmapset.id);
-
-				// return mostPlayed_id[i].beatmapset.id;
+			for (let play of batch) {
+				if (play && play.beatmap && play.beatmap.beatmapset_id) {
+					list_of_ids.push(play.beatmap.beatmapset_id);
+				}
 			}
-			// console.log(list_of_ids);
-			return list_of_ids;
+		}
+
+		return list_of_ids;
 	} catch (error) {
 		console.error("Could not fetch most played", error);
 	}
