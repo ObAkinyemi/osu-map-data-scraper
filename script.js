@@ -1,4 +1,4 @@
-import fs from 'fs'
+import fs, { write } from 'fs'
 import * as osu from 'osu-api-v2-js'
 import dotenv from 'dotenv'
 import * as http from "http"
@@ -11,16 +11,10 @@ const redirect_uri = process.env.REDIRECT_URI;
 
 // TypeScript
 let bm_ids = await arrayBMIDs("Saiyenmam", 1700).then(data => {return data});
-getSelf();
-// console.log(bm_ids);
-// console.log(typeof(bm_ids));
-// let test = await getMostPlayedBMs("Saiyenmam", 50).then(data => {return data});
-// console.log(test);
-// getBeatmapSetData(bm_ids);
-// let example_set = await getBeatmapSetData(1685881).then(data => {return data});
-// console.log(example_set);
-// let filename = example_set.title + ".txt";
-// testWrite("stream practice map datasets/"+filename, JSON.stringify(example_set));
+
+// console.log(typeof(727));
+getBeatmapSetData(bm_ids, "most-played-bm-data.txt");
+await writeMostPlayedBMs("Saiyenmam", 1700, "most-played-stats.txt");
 
 
 // function not yet working. Needs manual token generation and
@@ -92,15 +86,27 @@ async function logUserTopPlayBeatmap(username) {
 
 
 // Gets json information for a beatmap set when given an id.
-async function getBeatmapSetData(beatmapsetID){
+async function getBeatmapSetData(beatmapsetID, filename){
     try {
-
         const api = await osu.API.createAsync(`${id}`, `${secret}`).then(token => { return token } );
-		
-        const setData = await api.getBeatmapset(beatmapsetID);
 		// set up so beatmapsetID can be a single input or an array.
-        
-        return setData;
+        if(typeof(beatmapsetID) == "number"){
+
+			const setData = await api.getBeatmapset(beatmapsetID);
+			console.log(`You now have the beatmapset data for ${setData.title}`);
+			testWrite(`${setData.title}.json`, `${JSON.stringify(setData)}`);
+
+		} else if (typeof(beatmapsetID) == "object"){
+			console.log("You now have the beatmapset data for an array/object");
+
+			for (let id of beatmapsetID){
+				
+				const setData = await api.getBeatmapset(id);
+				fs.appendFile(filename, `\nTitle - ${setData.title}\n Beatmapset ID - ${setData.id}\n ${JSON.stringify(setData)}`,
+				(err) => err && console.error(err));
+				// testWrite(filename, `${setData.title}:\n ${JSON.stringify(setData)}`);
+			}
+		}
 
     } catch (error) {
         console.error("Error fetching beatmap set data", error);
@@ -119,22 +125,28 @@ async function testWrite(filename, input) {
 
 // This returns an array of my most played beatmap sets with surface level information based on a username the limit,
 // but not raw data about the maps themselves.
-async function getMostPlayedBMs(username, lim) {
+async function writeMostPlayedBMs(username, totalLimit, filename) {
 	try {
-		let my_play_stat_data = [];
+		const batchSize = 100;
 		const api = await osu.API.createAsync(`${id}`, `${secret}`).then(token => { return token } );
 		const userInfo = await api.getUser(username, osu.Ruleset.osu);
 		const userID = userInfo.id;
-		const mostPlayed = await api.getUserMostPlayed(userID, {limit: lim});
+		// const mostPlayed = await api.getUserMostPlayed(userID, {limit: totalLimit}).then(data => {return data});
 
-		// console.log("This is the set\n", mostPlayed_id[0].beatmapset.id);
-		// for (let i = 0; i < lim; i++){
-		// 	my_play_stat_data.push(mostPlayed_id);
-		// 	// console.log(mostPlayed_id[i].beatmapset.id);
+		for (let offset = 0; offset < totalLimit; offset += batchSize) {
+			const batch = await api.getUserMostPlayed(userID, { limit: batchSize, offset });
 
-		// 	// return mostPlayed_id[i].beatmapset.id;
-		// }
-		return mostPlayed.beatmapset.id;
+			for (let play of batch) {
+				if(play){
+					fs.appendFile(filename, `\nTitle - ${play.beatmapset.title}\nBeatmapset ID - ${play.beatmapset.id}\n${JSON.stringify(play)}`,
+					 (err) => err && console.err(err));
+					console.log(play.beatmapset.id);
+				}
+			}
+		}
+
+
+		// return mostPlayed;
 	} catch (error) {
 		console.error("Could not fetch most played", error);
 	}
