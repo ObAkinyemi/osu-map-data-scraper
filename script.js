@@ -10,11 +10,11 @@ const secret = process.env.CLIENT_SECRET;
 const redirect_uri = process.env.REDIRECT_URI;
 
 // TypeScript
-let bm_ids = await arrayBMIDs("Saiyenmam", 1700).then(data => {return data});
+let bm_ids = await arrayBMIDs("Saiyenmam", 101).then(data => {return data});
 
 // console.log(typeof(727));
-getBeatmapSetData(bm_ids, "most-played-bm-data.txt");
-await writeMostPlayedBMs("Saiyenmam", 1700, "most-played-stats.txt");
+getBeatmapSetData(bm_ids, "most-played-bm-data.json");
+// await writeMostPlayedBMs("Saiyenmam", 1700, "most-played-stats.txt");
 
 
 // function not yet working. Needs manual token generation and
@@ -89,6 +89,7 @@ async function logUserTopPlayBeatmap(username) {
 async function getBeatmapSetData(beatmapsetID, filename){
     try {
         const api = await osu.API.createAsync(`${id}`, `${secret}`).then(token => { return token } );
+		
 		// set up so beatmapsetID can be a single input or an array.
         if(typeof(beatmapsetID) == "number"){
 
@@ -98,11 +99,15 @@ async function getBeatmapSetData(beatmapsetID, filename){
 
 		} else if (typeof(beatmapsetID) == "object"){
 			console.log("You now have the beatmapset data for an array/object");
-
-			for (let id of beatmapsetID){
-				
-				const setData = await api.getBeatmapset(id);
-				fs.appendFile(filename, `\nTitle - ${setData.title}\n Beatmapset ID - ${setData.id}\n ${JSON.stringify(setData)}`,
+			for (let id_num of beatmapsetID){
+				const setData = await api.getBeatmapset(id_num);
+				let beatmapIDArray = [];
+				for (let i in setData.beatmaps){
+					// console.log(i);
+					beatmapIDArray.push(setData.beatmaps[i].id);
+				}
+				console.log(beatmapIDArray);
+				fs.appendFile(filename, `{\n"beatmapset_id": "${setData.id}",\n	"beatmap_id 1 through ${setData.beatmaps.length}": [${beatmapIDArray}]\n},\n`,
 				(err) => err && console.error(err));
 				// testWrite(filename, `${setData.title}:\n ${JSON.stringify(setData)}`);
 			}

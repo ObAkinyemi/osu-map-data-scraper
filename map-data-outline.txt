@@ -1,0 +1,18 @@
+fs.writeFile(filename, "[");
+{
+"beatmap_id": ${setData.beatmaps.id},
+"beatmapset_id": ${setData.beatmaps.beatmapset_id},
+"difficulty_rating": ${setData.beatmaps,
+"total_length": ${setData.beatmaps.total_length,
+"mode": ${setData.beatmaps.mode},
+"bpm": ${setData.beatmapset?.bpm},
+"status": ${setData.beatmapset?.status},
+"version": ${setData.beatmap.version},
+"title": ${setData.beatmapset?.title} || null,
+"artist": ${setData.artist} || null,
+"source": ${setData.beatmapset?.source} || null,
+"genre": ${setData.genre} || null,
+"language": ${setData.language} || null,
+"creator": ${setData.beatmapset?.creator} || null
+},
+fs.writeFile(filename, "]");
