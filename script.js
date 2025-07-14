@@ -99,15 +99,18 @@ async function getBeatmapSetData(beatmapsetID, filename){
 
 		} else if (typeof(beatmapsetID) == "object"){
 			console.log("You now have the beatmapset data for an array/object");
+
 			for (let id_num of beatmapsetID){
 				const setData = await api.getBeatmapset(id_num);
 				let beatmapIDArray = [];
+
 				for (let i in setData.beatmaps){
 					// console.log(i);
 					beatmapIDArray.push(setData.beatmaps[i].id);
 				}
+				// gives beatmap info and not beatmap array info.
 				console.log(beatmapIDArray);
-				fs.appendFile(filename, `{\n"beatmapset_id": "${setData.id}",\n	"beatmap_id 1 through ${setData.beatmaps.length}": [${beatmapIDArray}]\n},\n`,
+				fs.appendFile(filename, `{\n"beatmapset id": "${setData.id}",\n	"beatmap ids": [${beatmapIDArray}]\n},\n`,
 				(err) => err && console.error(err));
 				// testWrite(filename, `${setData.title}:\n ${JSON.stringify(setData)}`);
 			}

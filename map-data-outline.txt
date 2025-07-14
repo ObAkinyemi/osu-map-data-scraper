@@ -1,11 +1,13 @@
 fs.writeFile(filename, "[");
 {
 "beatmap_id": ${setData.beatmaps.id},
+"individual beatmap info" [
 "beatmapset_id": ${setData.beatmaps.beatmapset_id},
 "difficulty_rating": ${setData.beatmaps,
 "total_length": ${setData.beatmaps.total_length,
 "mode": ${setData.beatmaps.mode},
-"bpm": ${setData.beatmapset?.bpm},
+"bpm": ${setData.beatmaps[i].bpm},
+]
 "status": ${setData.beatmapset?.status},
 "version": ${setData.beatmap.version},
 "title": ${setData.beatmapset?.title} || null,
@@ -16,3 +18,24 @@ fs.writeFile(filename, "[");
 "creator": ${setData.beatmapset?.creator} || null
 },
 fs.writeFile(filename, "]");
+
+[
+  "beatmap_id",
+  "beatmapset_id",
+  "title",
+  "artist",
+  "creator",
+  "difficulty_rating",
+  "version",
+  "bpm",
+  "total_length",
+  "cs",
+  "ar",
+  "od",
+  "mode",
+  "source",
+  "genre_id",
+  "language_id",
+  "play_count",
+  "count"
+]
