@@ -19,6 +19,7 @@ fs.writeFile(filename, "[");
 },
 fs.writeFile(filename, "]");
 
+All fields of useful info
 [
   "beatmap_id",
   "beatmapset_id",
