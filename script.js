@@ -108,7 +108,7 @@ async function getBeatmapSetData(beatmapsetID, filename){
 				let beatmapIDArray = [];
 
 				for (let i in setData.beatmaps){
-					beatmapIDArray.push(`"beatmap id": ${setData.beatmaps[i].id}, "beatmap difficulty rating": ${setData.beatmaps[i].difficulty_rating}, "beatmap total length": ${setData.beatmaps[i].total_length}, "beatmap bpm": ${setData.beatmaps[i].bpm}, "beatmap cs": ${setData.beatmaps[i].cs}, "beatmap ar": ${setData.beatmaps[i].ar}, "beatmap mode": "${setData.beatmaps[i].mode}", "beatmap version": "${setData.beatmaps[i].version}}"`);
+					beatmapIDArray.push(`{"beatmap id": ${setData.beatmaps[i].id}, "beatmap difficulty rating": ${setData.beatmaps[i].difficulty_rating}, "beatmap total length": ${setData.beatmaps[i].total_length}, "beatmap bpm": ${setData.beatmaps[i].bpm}, "beatmap cs": ${setData.beatmaps[i].cs}, "beatmap ar": ${setData.beatmaps[i].ar}, "beatmap mode": "${setData.beatmaps[i].mode}", "beatmap version": "${setData.beatmaps[i].version}"}`);
 				}
 				console.log(`beatmap: ${counter++} is in!`);
 
