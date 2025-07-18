@@ -1,4 +1,4 @@
-import fs, { write } from 'fs'
+import fs from 'fs'
 import * as osu from 'osu-api-v2-js'
 import dotenv from 'dotenv'
 import * as http from "http"
@@ -10,11 +10,10 @@ const secret = process.env.CLIENT_SECRET;
 const redirect_uri = process.env.REDIRECT_URI;
 
 // TypeScript
-let bm_ids = await arrayBMIDs("Saiyenmam", 101).then(data => {return data});
-
+let bm_ids = await arrayBMIDs("Saiyenmam", 1700).then(data => {return data});
 // console.log(typeof(727));
 getBeatmapSetData(bm_ids, "most-played-bm-data.json");
-// await writeMostPlayedBMs("Saiyenmam", 1700, "most-played-stats.txt");
+// writeMostPlayedBMs("Saiyenmam", 1700, "Saiyenmam-most-played-stats.txt");
 
 
 // function not yet working. Needs manual token generation and
@@ -97,26 +96,29 @@ async function getBeatmapSetData(beatmapsetID, filename){
 			console.log(`You now have the beatmapset data for ${setData.title}`);
 			testWrite(`${setData.title}.json`, `${JSON.stringify(setData)}`);
 
+
 		} else if (typeof(beatmapsetID) == "object"){
+
 			console.log("You now have the beatmapset data for an array/object");
+			let counter = 0;
 
 			for (let id_num of beatmapsetID){
+
 				const setData = await api.getBeatmapset(id_num);
 				let beatmapIDArray = [];
-				let bmIDArray = new Map(); 
 
 				for (let i in setData.beatmaps){
-					// console.log(i);
-					// beatmapIDArray.push(`{"beatmap id": ${setData.beatmaps[i].id}, "beatmap difficulty rating": ${setData.beatmaps[i].difficulty_rating}, "beatmap total length": ${setData.beatmaps[i].total_length}, "beatmap bpm": ${setData.beatmaps[i].bpm}}`);
-					bmIDArray.set('beatmap id', setData.beatmaps[i].id); 
+					beatmapIDArray.push(`"beatmap id": ${setData.beatmaps[i].id}, "beatmap difficulty rating": ${setData.beatmaps[i].difficulty_rating}, "beatmap total length": ${setData.beatmaps[i].total_length}, "beatmap bpm": ${setData.beatmaps[i].bpm}, "beatmap cs": ${setData.beatmaps[i].cs}, "beatmap ar": ${setData.beatmaps[i].ar}, "beatmap mode": "${setData.beatmaps[i].mode}", "beatmap version": "${setData.beatmaps[i].version}}"`);
 				}
+				console.log(`beatmap: ${counter++} is in!`);
+
 				// gives beatmap info and not beatmap array info.
-				console.log(bmIDArray);
-				fs.appendFile(filename, `{\n"beatmapset id": "${setData.id}",\n	"beatmap ids": [${bmIDArray.entries()}]\n},\n`,
+				fs.appendFileSync(filename, `{\n"beatmapset id": "${setData.id}",\n "beatmapset title": "${setData.title}",\n "beatmapset artist": "${setData.artist}",\n "beatmapset language": "${setData.language.name}",\n "beatmapset genre": "${setData.genre.name}",\n "beatmapset source": "${setData.source}",\n "individual beatmap info": [${beatmapIDArray}]\n},\n`,
 				(err) => err && console.error(err));
-				// testWrite(filename, `${setData.title}:\n ${JSON.stringify(setData)}`);
 			}
 		}
+		// fs.appendFileSync(filename, "\n]")
+		console.log("Done Done Done with the raw!!!");
 
     } catch (error) {
         console.error("Error fetching beatmap set data", error);
@@ -148,13 +150,12 @@ async function writeMostPlayedBMs(username, totalLimit, filename) {
 
 			for (let play of batch) {
 				if(play){
-					fs.appendFile(filename, `\nTitle - ${play.beatmapset.title}\nBeatmapset ID - ${play.beatmapset.id}\n${JSON.stringify(play)}`,
+					fs.appendFile(filename, `${JSON.stringify(play)}\n`,
 					 (err) => err && console.err(err));
-					console.log(play.beatmapset.id);
 				}
 			}
 		}
-
+		consolelog("done donoe done with the mos playeds!!!")
 
 		// return mostPlayed;
 	} catch (error) {
@@ -181,6 +182,7 @@ async function arrayBMIDs(username, totalLimit) {
 				}
 			}
 		}
+
 
 		return list_of_ids;
 	} catch (error) {
