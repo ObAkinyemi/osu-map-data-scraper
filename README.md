@@ -16,7 +16,6 @@ Tech Stack & Tools
 ⸻
 
 How It Works
-
 	1.	OAuth2 Authentication
 		The tool authenticates with osu! via OAuth2. A local HTTP server and browser redirect automatically retrieve the access token needed to call the API.
 	2.	Fetching Most Played Maps
