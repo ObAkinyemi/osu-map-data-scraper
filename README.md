@@ -7,7 +7,6 @@ Osu-Map-Data Scraper is a Node.js-based tool that extracts your most-played beat
 ⸻
 
 Tech Stack & Tools
-
 	•	Node.js
 	•	osu-api-v2-js (by TTTaevas)
 	•	OAuth2 Authorization Flow
@@ -17,7 +16,6 @@ Tech Stack & Tools
 ⸻
 
 How It Works
-
 	1.	OAuth2 Authentication
 		The tool authenticates with osu! via OAuth2. A local HTTP server and browser redirect automatically retrieve the access token needed to call the API.
 	2.	Fetching Most Played Maps
@@ -33,7 +31,6 @@ How It Works
 ⸻
 
 Use Cases
-
 	•	Musicians and rhythm gamers looking to turn their osu! stats into instrument-specific training routines
 	•	Developers interested in using public gaming APIs for creative performance analytics
 	•	Portfolio demonstration of integrating APIs, working with OAuth, file I/O, and asynchronous logic
@@ -43,7 +40,6 @@ Use Cases
 How to Use
 
 As an osu! player:
-
 	1.	Clone the repo.
 	2.	In .env, enter your CLIENT_ID, CLIENT_SECRET, and REDIRECT_URI from the osu! API dashboard.
 	3.	Replace 'Saiyenmam' with your osu! username in script.js.
@@ -55,7 +51,6 @@ Use any public osu! username like Mrekk, Lifeline, or Xootynator.
 ⸻
 
 Lessons Learned
-
 	•	Learned how to integrate APIs using OAuth2 and work with redirect URIs securely.
 	•	Improved handling of asynchronous loops and API rate limits using batching with offsets.
 	•	Developed better file management strategies by filtering only useful data and formatting JSON correctly.
